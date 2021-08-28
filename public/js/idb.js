@@ -30,12 +30,59 @@ request.onerror = function (event) {
 
 // This function will be executed if we attempt to submit new money and there's no internet connection
 function saveRecord(record) {
-    // open a new transaction with the database with read and write permissions 
-    const transaction = db.transaction(['new_money'], 'readwrite');
-  
-    // access the object store for `new_pizza`
-    const moneyObjectStore = transaction.objectStore('new_money');
-  
-    // add record to your store with add method
-    moneyObjectStore.add(record);
-  }
+  // open a new transaction with the database with read and write permissions
+  const transaction = db.transaction(["new_money"], "readwrite");
+
+  // access the object store for `new_pizza`
+  const moneyObjectStore = transaction.objectStore("new_money");
+
+  // add record to your store with add method
+  moneyObjectStore.add(record);
+}
+
+function uploadMoney() {
+  // open a transaction on your db
+  const transaction = db.transaction(["new_money"], "readwrite");
+
+  // access your object store
+  const moneyObjectStore = transaction.objectStore("new_money");
+
+  // get all records from store and set to a variable
+  const getAll = moneyObjectStore.getAll();
+
+  // upon a successful .getAll() execution, run this function
+  getAll.onsuccess = function () {
+    // if there was data in indexedDb's store, let's send it to the api server
+    if (getAll.result.length > 0) {
+      fetch("/api/transaction", {
+        method: "POST",
+        body: JSON.stringify(getAll.result),
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((serverResponse) => {
+          if (serverResponse.message) {
+            throw new Error(serverResponse);
+          }
+          // open one more transaction
+          const transaction = db.transaction(["new_money"], "readwrite");
+          // access the new_money object store
+          const moneyObjectStore = transaction.objectStore("new_money");
+          // clear all items in your store
+          moneyObjectStore.clear();
+
+          alert("All saved transactions have been submitted!");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+}
+
+
+// listen to come back online
+window.addEventListener('online', uploadMoney);
