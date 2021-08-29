@@ -22,7 +22,7 @@
 
 
   ## Usage
-  For tracking your money!
+  For tracking your money online and offline!
 
   ## Contribution
  Rutgers bootcamp provided starter code for this project.
