@@ -1,5 +1,7 @@
 ## Save Dat Money app
 
+![budget-tracker](https://user-images.githubusercontent.com/33878845/131260960-35685e0a-162d-48db-b68a-56f011782a41.PNG)
+
 ## Description
   AS AN avid traveler
   I WANT to be able to track my withdrawals and deposits with or without a data/internet connection
